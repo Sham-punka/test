@@ -1,0 +1,36 @@
+name: Karmann's site CI/CD
+on:
+  push:
+    branches:
+      - main
+      - 'site/**'
+  pull_request:
+    branches:
+      - main
+      - 'site/**'
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 20.x ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 6.10.0
+      - name: Starting Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'pnpm'
+      - name: Install modules
+        run: pnpm install
+      - name: Build project
+        run: |
+          cd site
+          pnpm run build
+      - name: Lint code
+        run: |
+          cd site
+          pnpm run lint
